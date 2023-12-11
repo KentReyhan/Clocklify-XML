@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="textFieldColor" format="color" />
+
+    <attr name="labelActionButton" format="string" />
+    <attr name="labelActionButtonBackground" format="reference" />
+    <attr name="labelActionButtonColor" format="color" />
+
+    <attr name="labelTextButton" format="string" />
+    <attr name="labelTextButtonColor" format="color" />
+
+    <attr name="formatText" format="string" />
+    <attr name="isRequired" format="boolean" />
+    <attr name="labelVisibility" format="enum">
+        <enum name="visible" value="0" />
+        <enum name="invisible" value="4" />
+        <enum name="gone" value="8" />
+    </attr>
+    <attr name="errorText" format="string" />
+
+
+
+    <declare-styleable name="CustomTextField">
+        <attr name="textFieldColor" />
+        <attr name="formatText" />
+        <attr name="isRequired" />
+        <attr name="android:hint" />
+        <attr name="android:text" />
+        <attr name="android:inputType" />
+        <attr name="android:imeOptions" />
+        <attr name="errorText" />
+
+    </declare-styleable>
+
+    <declare-styleable name="CTAButton">
+        <attr name="labelActionButton" />
+        <attr name="labelActionButtonBackground" />
+        <attr name="labelActionButtonColor" />
+    </declare-styleable>
+
+    <declare-styleable name="TextButton">
+        <attr name="labelTextButton" />
+        <attr name="labelTextButtonColor" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomAppBar">
+        <attr name="title" />
+        <attr name="backButtonVisibility" format="enum">
+            <enum name="visible" value="0" />
+            <enum name="invisible" value="4" />
+            <enum name="gone" value="8" />
+        </attr>
+    </declare-styleable>
+
+</resources>

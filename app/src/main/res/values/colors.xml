@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#FF25367B</color>
+    <color name="dark_primary">#FF233971</color>
+    <color name="light_primary">#FF434B8C</color>
+
+    <color name="secondary_gradient_1">#FF45CDDC</color>
+    <color name="secondary_gradient_2">#FF2EBED9</color>
+
+    <color name="lavender">#FFA7A6C5</color>
+
+    <color name="red">#FFB3261E</color>
+
+</resources>
