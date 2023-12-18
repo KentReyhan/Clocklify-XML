@@ -1,18 +1,47 @@
 <resources>
     <string name="app_name">Clocklify</string>
+
     <string name="email_label">E-mail</string>
     <string name="error_placeholder">Error</string>
+    <string name="placeholder_cta_button_text">ACTION</string>
+
     <string name="sign_in">SIGN IN</string>
     <string name="create_new_account_text_button">Create new account?</string>
-    <string name="placeholder_cta_button_text">ACTION</string>
+
     <string name="password_title">Password</string>
     <string name="password_hint">Input Your Password</string>
     <string name="ok">OK</string>
     <string name="forgot_password_text_button">Forgot password?</string>
+
     <string name="create_new_account_title">Create New Account</string>
     <string name="create">CREATE</string>
+
     <string name="register_title">Create New Account</string>
     <string name="email_register_hint">Input Your E-Mail</string>
     <string name="password_register_hint">Create Your Password</string>
     <string name="confirm_password_register_hint">Confirm Your Password</string>
+
+    <string name="timer_tab_title">TIMER</string>
+    <string name="activity_tab_title">ACTIVITY</string>
+
+    <string name="timer_start">00 \t\t : \t\t 00 \t\t : \t\t 00</string>
+
+    <string name="start_time_title">Start Time</string>
+    <string name="start_timer_default">-</string>
+    <string name="start_date_default">-</string>
+
+    <string name="end_time_title">End Time</string>
+    <string name="end_timer_default">-</string>
+    <string name="end_date_default">-</string>
+    <string name="text_box_activity">Write your activity here …</string>
+
+    <string name="start_button_text">START</string>
+
+    <string name="save_button_text">SAVE</string>
+    <string name="delete_button_text">DELETE</string>
+
+    <string name="stop_button_text">STOP</string>
+    <string name="reset_button_text">RESET</string>
+
+
 </resources>

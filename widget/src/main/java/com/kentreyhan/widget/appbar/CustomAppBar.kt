@@ -37,7 +37,7 @@ class CustomAppBar(context: Context, attributeSet: AttributeSet?) :
             context.obtainStyledAttributes(attributeSet, R.styleable.CustomAppBar)
 
         try {
-            title = attributes.getString(R.styleable.CustomAppBar_title) ?: ""
+            title = attributes.getString(R.styleable.CustomAppBar_appBarTitle) ?: ""
             backButtonVisibility = attributes.getInteger(
                 R.styleable.CustomAppBar_backButtonVisibility,
                 View.VISIBLE

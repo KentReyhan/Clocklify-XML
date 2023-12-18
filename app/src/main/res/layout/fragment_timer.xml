@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/primary"
+    tools:context=".activities.fragment.TimerFragment" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/timerText"
+            style="@style/TimerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="100dp"
+            android:text="@string/timer_start"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timerText">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/startTimeTitle"
+                    style="@style/LabelText.regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_time_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/startTimerText"
+                    style="@style/LabelTimerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="@string/start_timer_default"
+                    app:layout_constraintEnd_toEndOf="@+id/startTimeTitle"
+                    app:layout_constraintStart_toStartOf="@+id/startTimeTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/startTimeTitle" />
+
+                <TextView
+                    android:id="@+id/startDateText"
+                    style="@style/LabelText.regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_date_default"
+                    app:layout_constraintEnd_toEndOf="@+id/startTimeTitle"
+                    app:layout_constraintStart_toStartOf="@+id/startTimeTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/startTimerText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/endTimeTitle"
+                    style="@style/LabelText.regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/end_time_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/endTimerText"
+                    style="@style/LabelTimerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="@string/end_timer_default"
+                    app:layout_constraintEnd_toEndOf="@+id/endTimeTitle"
+                    app:layout_constraintStart_toStartOf="@+id/endTimeTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/endTimeTitle" />
+
+                <TextView
+                    android:id="@+id/endDateText"
+                    style="@style/LabelText.regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/end_date_default"
+                    app:layout_constraintEnd_toEndOf="@+id/endTimeTitle"
+                    app:layout_constraintStart_toStartOf="@+id/endTimeTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/endTimerText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <com.kentreyhan.widget.card.CoordinateCard
+            android:id="@+id/coordinateCardTimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="45dp"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:coordinateText="-"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textBoxLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="30dp"
+            app:boxStrokeColor="@color/box_stroke_white"
+            app:boxStrokeWidth="1dp"
+            app:hintEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/coordinateCardTimer">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textBoxField"
+                style="@style/TextFieldStyle.black"
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:background="@drawable/background_white_rounded"
+                android:clickable="false"
+                android:gravity="top"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:maxLines="3"
+                android:hint="@string/text_box_activity"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/endTimerButtonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp"
+            android:orientation="horizontal"
+            android:weightSum="11"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/textBoxLayout">
+
+            <com.kentreyhan.widget.button.CTAButton
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                app:labelActionButton="@string/save_button_text" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3" />
+
+            <com.kentreyhan.widget.button.CTAButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                app:labelActionButtonBackground="@drawable/background_white_rounded"
+                app:labelActionButtonColor="@color/lavender"
+                app:labelActionButton="@string/delete_button_text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/runningTimerButtonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp"
+            android:orientation="horizontal"
+            android:weightSum="11"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/textBoxLayout">
+
+            <com.kentreyhan.widget.button.CTAButton
+                android:id="@+id/stopButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                app:labelActionButton="@string/stop_button_text" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3" />
+
+            <com.kentreyhan.widget.button.CTAButton
+                android:id="@+id/resetButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                app:labelActionButtonBackground="@drawable/background_white_rounded"
+                app:labelActionButtonColor="@color/lavender"
+                app:labelActionButton="@string/reset_button_text" />
+        </LinearLayout>
+
+        <com.kentreyhan.widget.button.CTAButton
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp"
+            android:visibility="visible"
+            app:labelActionButton="@string/start_button_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textBoxLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

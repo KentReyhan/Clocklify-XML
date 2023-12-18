@@ -3,9 +3,9 @@ package com.kentreyhan.clocklify.login.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kentreyhan.clocklify.activities.activity.ActivitiesActivity
 import com.kentreyhan.clocklify.register.activity.RegisterActivity
 import com.kentreyhan.clocklify.login.activity.LoginPasswordActivity
 
@@ -15,9 +15,9 @@ class LoginViewModel: ViewModel() {
 
     fun navigateToLoginPasswordActivity(context: Context) {
         print(emailValue.value)
-        if (emailValue.value.isNullOrEmpty()){
-            return
-        }
+        //if (emailValue.value.isNullOrEmpty()){
+            //return
+        //}
         context.startActivity(
             Intent(context, LoginPasswordActivity::class.java)
             .putExtra("E-Mail",emailValue.value)
@@ -40,12 +40,15 @@ class LoginViewModel: ViewModel() {
     fun login(context: Context) {
         if(emailValue.value.isNullOrEmpty()){
             Log.d("Email", "null")
-            return
+            //return
         }
         else{
             //TODO:Temporary, will be directed to timer page
             Log.d("Email", emailValue.value!!)
         }
+        context.startActivity(
+            Intent(context, ActivitiesActivity::class.java)
+        )
     }
 
 }

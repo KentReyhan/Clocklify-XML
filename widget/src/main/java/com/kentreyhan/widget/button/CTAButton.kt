@@ -22,6 +22,11 @@ class CTAButton(context: Context, attributeSet: AttributeSet) : LinearLayout(con
         R.color.white, null
     )
 
+    private val defaultBackgroundDrawable = ResourcesCompat.getDrawable(
+        context.resources,
+        R.drawable.background_light_blue_rounded, null
+    )
+
     var labelText: CharSequence?
         get() = binding.ctaButton.text
         set(value) {
@@ -33,16 +38,16 @@ class CTAButton(context: Context, attributeSet: AttributeSet) : LinearLayout(con
             }
         }
 
-    var textColor: Int = binding.ctaButton.currentTextColor
+    var textColor: Int = defaultTextColor
         set(value) {
             field = value
             binding.ctaButton.setTextColor(textColor)
         }
 
-    var buttonBackgroundDrawable: Drawable?
-        get() = binding.ctaButton.background
+    var buttonBackgroundDrawable: Drawable? = defaultBackgroundDrawable
         set(value) {
-            binding.ctaButton.background = value
+            field=value
+            binding.ctaButtonBackground.background = value
         }
 
     init {
@@ -50,7 +55,13 @@ class CTAButton(context: Context, attributeSet: AttributeSet) : LinearLayout(con
         try {
             labelText = attributes.getString(R.styleable.CTAButton_labelActionButton)
             textColor = attributes.getColor(R.styleable.CTAButton_labelActionButtonColor, defaultTextColor)
-            buttonBackgroundDrawable = attributes.getDrawable(R.styleable.CTAButton_labelActionButtonBackground)
+            val background = attributes.getDrawable(R.styleable.CTAButton_labelActionButtonBackground)
+            buttonBackgroundDrawable = if(background==null){
+                defaultBackgroundDrawable
+            } else {
+                attributes.getDrawable(R.styleable.CTAButton_labelActionButtonBackground)
+            }
+
         } finally {
             attributes.recycle()
 

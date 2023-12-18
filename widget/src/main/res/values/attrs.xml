@@ -18,6 +18,9 @@
     </attr>
     <attr name="errorText" format="string" />
 
+    <attr name="appBarTitle" format="string"/>
+    <attr name="coordinateText" format="string"/>
+
 
 
     <declare-styleable name="CustomTextField">
@@ -44,12 +47,16 @@
     </declare-styleable>
 
     <declare-styleable name="CustomAppBar">
-        <attr name="title" />
+        <attr name="appBarTitle"/>
         <attr name="backButtonVisibility" format="enum">
             <enum name="visible" value="0" />
             <enum name="invisible" value="4" />
             <enum name="gone" value="8" />
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="CoordinateCard">
+        <attr name="coordinateText" />
     </declare-styleable>
 
 </resources>

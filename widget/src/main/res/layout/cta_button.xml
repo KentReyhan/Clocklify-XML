@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_primary_blue_rounded"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ctaButtonBackground"
+    android:background="@drawable/background_light_blue_rounded"
     android:gravity="center"
     android:orientation="horizontal"
     android:paddingHorizontal="20dp">
@@ -14,6 +16,6 @@
         android:fontFamily="@font/roboto_bold"
         android:padding="12dp"
         android:textColor="@color/white"
-        android:text="@string/sign_in" />
+        tools:text="@string/sign_in" />
 
 </LinearLayout>

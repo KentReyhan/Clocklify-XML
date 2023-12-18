@@ -13,4 +13,5 @@
     <string name="create">CREATE</string>
     <string name="success_title_dialog">Success</string>
     <string name="success_description_dialog">Your account has been successfully created.</string>
+    <string name="coordinate_default">-</string>
 </resources>
