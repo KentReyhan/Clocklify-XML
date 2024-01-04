@@ -42,6 +42,12 @@
 
     <string name="stop_button_text">STOP</string>
     <string name="reset_button_text">RESET</string>
+    <string name="search_activity">Search activity</string>
+    <string name="detail_title">Detail</string>
 
+    <string-array name="sort_by">
+        <item>Latest Date</item>
+        <item>Nearby</item>
+    </string-array>
 
 </resources>

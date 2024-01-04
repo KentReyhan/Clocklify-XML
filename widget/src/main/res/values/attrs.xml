@@ -19,6 +19,9 @@
     <attr name="errorText" format="string" />
 
     <attr name="appBarTitle" format="string"/>
+    <attr name="appBarTitleColor" format="color" />
+    <attr name="backButtonDrawable" format="reference" />
+
     <attr name="coordinateText" format="string"/>
 
 
@@ -48,6 +51,8 @@
 
     <declare-styleable name="CustomAppBar">
         <attr name="appBarTitle"/>
+        <attr name="appBarTitleColor" />
+        <attr name="backButtonDrawable" />
         <attr name="backButtonVisibility" format="enum">
             <enum name="visible" value="0" />
             <enum name="invisible" value="4" />

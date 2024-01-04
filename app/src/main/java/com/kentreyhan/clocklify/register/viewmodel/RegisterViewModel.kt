@@ -1,7 +1,6 @@
 package com.kentreyhan.clocklify.register.viewmodel
 
 import android.content.Context
-import android.content.res.Resources
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kentreyhan.widget.dialog.CustomDialog

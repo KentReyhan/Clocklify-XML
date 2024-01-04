@@ -1,10 +1,8 @@
 package com.kentreyhan.clocklify.register.activity
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import com.kentreyhan.clocklify.databinding.ActivityRegisterBinding
 import com.kentreyhan.clocklify.register.viewmodel.RegisterViewModel
 

@@ -1,35 +1,50 @@
 package com.kentreyhan.clocklify.activities.fragment
 
-
+import android.location.Location
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.kentreyhan.clocklify.R
 import com.kentreyhan.clocklify.activities.viewmodel.TimerViewModel
 import com.kentreyhan.clocklify.databinding.FragmentTimerBinding
+import com.kentreyhan.clocklify.utils.LocationUtils
 import com.kentreyhan.clocklify.utils.StringUtils
 
 class TimerFragment : Fragment() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var binding: FragmentTimerBinding
 
-    private val vm: TimerViewModel by viewModels()
+    private val timerVM: TimerViewModel by viewModels()
+
+    private val locationUtils: LocationUtils = LocationUtils()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().applicationContext)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = FragmentTimerBinding.inflate(inflater, container, false)
         initEvent()
         initObserver()
         return binding.root
+
     }
 
     override fun onDestroyView() {
@@ -38,58 +53,69 @@ class TimerFragment : Fragment() {
 
     private fun initEvent() {
         binding.startButton.setOnClickListener {
-            vm.startTimer()
+            getCoordinate()
+            timerVM.startTimer()
             setVisibleButton(goToRunning = true)
+
         }
         binding.stopButton.setOnClickListener {
-            vm.stopTimer()
+            timerVM.stopTimer()
             setVisibleButton(goToEnd = true)
         }
         binding.resetButton.setOnClickListener {
-            vm.resetTimer()
+            timerVM.resetTimer()
             setVisibleButton(goToStart = true)
         }
         binding.saveButton.setOnClickListener {
-            vm.saveActivity()
+            if (timerVM.activityDetail.value.isNullOrBlank()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Text box must be filled to be able to save activity",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            timerVM.saveActivity()
             setVisibleButton(goToStart = true)
         }
         binding.deleteButton.setOnClickListener {
-            vm.deleteActivity()
+            timerVM.deleteActivity()
             setVisibleButton(goToStart = true)
         }
 
         binding.textBoxField.addTextChangedListener {
-            vm.onActivitiesTextBoxChanged(binding.textBoxField.text.toString())
+            timerVM.onActivitiesTextBoxChanged(binding.textBoxField.text.toString())
         }
     }
 
     private fun initObserver() {
-        vm.runningTimer.observe(viewLifecycleOwner) { timer ->
+        timerVM.runningTimer.observe(viewLifecycleOwner) { timer ->
             val str = StringUtils().checkIfStringValueExist(timer, resources.getString(R.string.timer_start))
             binding.timerText.text = str
         }
 
-        vm.startTimer.observe(viewLifecycleOwner) { startTime ->
+        timerVM.startTimer.observe(viewLifecycleOwner) { startTime ->
             val str = StringUtils().checkIfStringValueExist(startTime, "-")
             binding.startTimerText.text = str
         }
 
-        vm.startDate.observe(viewLifecycleOwner) { startDate ->
+        timerVM.startDate.observe(viewLifecycleOwner) { startDate ->
             val str = StringUtils().checkIfStringValueExist(startDate, "-")
             binding.startDateText.text = str
         }
 
-        vm.endTimer.observe(viewLifecycleOwner) { endTime ->
+        timerVM.endTimer.observe(viewLifecycleOwner) { endTime ->
             val str = StringUtils().checkIfStringValueExist(endTime, "-")
             binding.endTimerText.text = str
         }
 
-        vm.endDate.observe(viewLifecycleOwner) { endDate ->
+        timerVM.endDate.observe(viewLifecycleOwner) { endDate ->
             val str = StringUtils().checkIfStringValueExist(endDate, "-")
             binding.endDateText.text = str
         }
 
-        vm.coordinates.observe(viewLifecycleOwner) { coordinate ->
+        timerVM.coordinates.observe(viewLifecycleOwner) { coordinate ->
             val str = StringUtils().checkIfStringValueExist(coordinate, "-")
             binding.coordinateCardTimer.text = str
         }
@@ -117,6 +143,34 @@ class TimerFragment : Fragment() {
                     endTimerButtonLayout.visibility = View.VISIBLE
                 }
             }
+        }
+    }
+
+    private fun getCoordinate() {
+        if (!locationUtils.checkForFineLocationPermission(requireContext())) {
+            Toast.makeText(
+                requireContext(),
+                "Coordinate cannot be acquired, please enable access for GPS in setting",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+            override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+            override fun isCancellationRequested() = false
+        }).addOnSuccessListener { location: Location? ->
+            if (location == null)
+                Toast.makeText(
+                    requireContext(),
+                    "Coordinate cannot be acquired, please check if location are enabled",
+                    Toast.LENGTH_SHORT
+                ).show()
+            else {
+                timerVM.latitude = location.latitude
+                timerVM.longitude = location.longitude
+                timerVM.coordinates.value = String.format("%f.%f", timerVM.latitude, timerVM.longitude)
+            }
+
         }
     }
 

@@ -37,6 +37,9 @@
         <activity
             android:name=".activities.activity.ActivitiesActivity"
             />
+        <activity
+            android:name=".activitiesDetail.activity.ActivitiesDetailActivity"
+            />
     </application>
 
 </manifest>

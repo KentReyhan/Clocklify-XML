@@ -91,4 +91,26 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="GroupedListText">
+        <item name="fontFamily">@font/roboto_bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">16sp</item>
+        <item name="android:textColor">@color/lavender</item>
+    </style>
+
+    <style name="GroupedListText.yellow" parent="GroupedListText">
+        <item name="android:textColor">@color/yellow</item>
+    </style>
+
+    <style name="GroupedListText.regular" parent="GroupedListText">
+        <item name="fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <style name="DetailDateText">
+        <item name="fontFamily">@font/roboto_bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">22sp</item>
+        <item name="android:textColor">@color/yellow</item>
+    </style>
+
 </resources>

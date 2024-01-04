@@ -1,9 +1,6 @@
 package com.kentreyhan.widget.textfield
 
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.InputType
 import android.util.AttributeSet
@@ -12,7 +9,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColor
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import com.kentreyhan.widget.R

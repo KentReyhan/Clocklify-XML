@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:paddingHorizontal="16dp">
+
+    <com.kentreyhan.widget.appbar.CustomAppBar
+        android:id="@+id/activitiesAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:appBarTitle="@string/detail_title"
+        app:appBarTitleColor="@color/white"
+        app:backButtonDrawable="@drawable/ic_back_white"/>
+
+    <TextView
+        android:id="@+id/detailsDateText"
+        style="@style/DetailDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="40dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activitiesAppBar"
+        tools:text="12 Mar 2020" />
+
+    <FrameLayout
+        android:id="@+id/activitiesDetailFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailsDateText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
