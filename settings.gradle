@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Clocklify"
 include ':app'
-include ':widget'
+include ':commons'
+include ':dao'

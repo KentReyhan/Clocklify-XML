@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -18,8 +19,12 @@ import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.kentreyhan.clocklify.R
 import com.kentreyhan.clocklify.activities.viewmodel.TimerViewModel
 import com.kentreyhan.clocklify.databinding.FragmentTimerBinding
-import com.kentreyhan.clocklify.utils.LocationUtils
-import com.kentreyhan.clocklify.utils.StringUtils
+import com.kentreyhan.commons.utils.LocationUtils
+import com.kentreyhan.commons.utils.StringUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class TimerFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -43,6 +48,7 @@ class TimerFragment : Fragment() {
         binding = FragmentTimerBinding.inflate(inflater, container, false)
         initEvent()
         initObserver()
+        getCoordinate()
         return binding.root
 
     }
@@ -53,7 +59,6 @@ class TimerFragment : Fragment() {
 
     private fun initEvent() {
         binding.startButton.setOnClickListener {
-            getCoordinate()
             timerVM.startTimer()
             setVisibleButton(goToRunning = true)
 
@@ -76,7 +81,7 @@ class TimerFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            timerVM.saveActivity()
+            timerVM.saveActivity(requireContext())
             setVisibleButton(goToStart = true)
         }
         binding.deleteButton.setOnClickListener {
@@ -122,7 +127,8 @@ class TimerFragment : Fragment() {
 
     }
 
-    private fun setVisibleButton(goToStart: Boolean? = null, goToRunning: Boolean? = null, goToEnd: Boolean? = null) {
+    private fun setVisibleButton(goToStart: Boolean? = null, goToRunning: Boolean? = null, goToEnd: Boolean? =
+    null) {
         with(binding) {
             when {
                 goToStart == true -> {

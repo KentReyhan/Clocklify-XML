@@ -1,17 +1,30 @@
 package com.kentreyhan.clocklify.activities.viewmodel
 
+import android.content.Context
 import android.icu.util.Calendar
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.dao.database.ActivityDatabase
+import com.example.dao.model.Activity
 import com.kentreyhan.clocklify.activities.model.ActivitiesModel
 import com.kentreyhan.clocklify.repository.ActivityRepository
-import com.kentreyhan.clocklify.utils.DateUtils
+import com.kentreyhan.commons.utils.DateUtils
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 
 class TimerViewModel : ViewModel() {
+
+    private lateinit var db: ActivityDatabase
 
     val runningTimer: MutableLiveData<String?> = MutableLiveData<String?>()
 
@@ -24,11 +37,11 @@ class TimerViewModel : ViewModel() {
     val coordinates: MutableLiveData<String?> = MutableLiveData<String?>()
     val activityDetail: MutableLiveData<String?> = MutableLiveData<String?>()
 
-    var latitude: Double? = null
-    var longitude: Double? = null
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
 
-    var startDateTime: Date? = null
-    var endDateTime: Date? = null
+    var startDateTime: Date = Date()
+    var endDateTime: Date = Date()
 
     private val interval: Int = 1000
     private var timerHandler: Handler? = null
@@ -57,26 +70,24 @@ class TimerViewModel : ViewModel() {
         resetEndDateTime()
     }
 
-    fun saveActivity() {
-        //TODO: Save Activity in Local
+    fun saveActivity(context: Context) {
+        db = ActivityDatabase.getDatabase(context)
 
-        formatTimer(second, true)
+        Log.d("timer", runningTimer.value.toString())
+        GlobalScope.launch {
+            val formattedTimer = formatTimer(second, true)
 
-        ActivityRepository.addItem(
-            ActivitiesModel(
-                id = if (ActivityRepository.getSize() == 0) {
-                    1
-                } else {
-                    ActivityRepository.getId() + 1
-                },
-                timer = runningTimer.value.toString(),
-                activitiesDetail = activityDetail.value.toString(),
-                startTime = startDateTime!!,
-                endTime = endDateTime!!,
-                latitude = latitude!!,
-                longitude = longitude!!,
+            db.activityDao().addActivity(
+                Activity(
+                    timer = formattedTimer,
+                    activitiesDetail = activityDetail.value.toString(),
+                    startTime = startDateTime,
+                    endTime = endDateTime,
+                    latitude = latitude,
+                    longitude = longitude,
+                )
             )
-        )
+        }
 
         stopRunningTimer()
         resetStartDateTime()
@@ -97,24 +108,22 @@ class TimerViewModel : ViewModel() {
         override fun run() {
             try {
                 second += 1
-                formatTimer(second, false)
+                runningTimer.value = formatTimer(second, false)
             } finally {
                 timerHandler!!.postDelayed(this, interval.toLong())
             }
         }
     }
 
-    private fun formatTimer(time: Long, isSaved: Boolean) {
+    private fun formatTimer(time: Long, isSaved: Boolean): String {
         val hours = time % 86400 / 3600
         val minutes = time % 86400 % 3600 / 60
         val seconds = time % 86400 % 3600 % 60
 
         if (isSaved) {
-            runningTimer.value = String.format("%02d : %02d : %02d", hours, minutes, seconds)
-            return
+            return String.format("%02d : %02d : %02d", hours, minutes, seconds)
         }
-
-        runningTimer.value = String.format("%02d \t\t : \t\t %02d \t\t : \t\t %02d", hours, minutes, seconds)
+        return String.format("%02d \t\t : \t\t %02d \t\t : \t\t %02d", hours, minutes, seconds)
     }
 
     private fun stopRunningTimer() {
@@ -126,13 +135,13 @@ class TimerViewModel : ViewModel() {
     private fun resetStartDateTime() {
         startTimer.value = "-"
         startDate.value = "-"
-        startDateTime = null
+        startDateTime = Date()
     }
 
     private fun resetEndDateTime() {
         endTimer.value = "-"
         endDate.value = "-"
-        endDateTime = null
+        endDateTime = Date()
     }
 
     companion object {

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="@color/primary"
-    tools:context=".activities.fragment.TimerFragment" >
+    tools:context=".activities.fragment.TimerFragment"
+    android:clickable="true"
+    android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/timerText"
             style="@style/TimerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="@string/timer_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="100dp"
-            android:text="@string/timer_start"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -112,16 +114,16 @@
 
         </LinearLayout>
 
-        <com.kentreyhan.widget.card.CoordinateCard
+        <com.kentreyhan.commons.widgets.card.CoordinateCard
             android:id="@+id/coordinateCardTimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="45dp"
             android:layout_marginTop="30dp"
+            app:coordinateText="-"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:coordinateText="-"/>
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textBoxLayout"
@@ -145,10 +147,10 @@
                 android:background="@drawable/background_white_rounded"
                 android:clickable="false"
                 android:gravity="top"
+                android:hint="@string/text_box_activity"
                 android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:maxLines="3"
-                android:hint="@string/text_box_activity"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -158,14 +160,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="16dp"
             android:paddingBottom="16dp"
-            android:orientation="horizontal"
-            android:weightSum="11"
             android:visibility="gone"
+            android:weightSum="11"
             app:layout_constraintTop_toBottomOf="@+id/textBoxLayout">
 
-            <com.kentreyhan.widget.button.CTAButton
+            <com.kentreyhan.commons.widgets.button.CTAButton
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -177,14 +179,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3" />
 
-            <com.kentreyhan.widget.button.CTAButton
+            <com.kentreyhan.commons.widgets.button.CTAButton
                 android:id="@+id/deleteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
+                app:labelActionButton="@string/delete_button_text"
                 app:labelActionButtonBackground="@drawable/background_white_rounded"
-                app:labelActionButtonColor="@color/lavender"
-                app:labelActionButton="@string/delete_button_text" />
+                app:labelActionButtonColor="@color/lavender" />
         </LinearLayout>
 
         <LinearLayout
@@ -192,14 +194,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="16dp"
             android:paddingBottom="16dp"
-            android:orientation="horizontal"
-            android:weightSum="11"
             android:visibility="gone"
+            android:weightSum="11"
             app:layout_constraintTop_toBottomOf="@+id/textBoxLayout">
 
-            <com.kentreyhan.widget.button.CTAButton
+            <com.kentreyhan.commons.widgets.button.CTAButton
                 android:id="@+id/stopButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -211,17 +213,17 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3" />
 
-            <com.kentreyhan.widget.button.CTAButton
+            <com.kentreyhan.commons.widgets.button.CTAButton
                 android:id="@+id/resetButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
+                app:labelActionButton="@string/reset_button_text"
                 app:labelActionButtonBackground="@drawable/background_white_rounded"
-                app:labelActionButtonColor="@color/lavender"
-                app:labelActionButton="@string/reset_button_text" />
+                app:labelActionButtonColor="@color/lavender" />
         </LinearLayout>
 
-        <com.kentreyhan.widget.button.CTAButton
+        <com.kentreyhan.commons.widgets.button.CTAButton
             android:id="@+id/startButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -233,6 +235,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textBoxLayout" />
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

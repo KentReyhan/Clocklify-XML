@@ -3,10 +3,14 @@ package com.kentreyhan.clocklify.activities.activity
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import com.example.dao.database.ActivityDatabase
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kentreyhan.clocklify.activities.fragment.ActivitiesFramePageAdapter
 import com.kentreyhan.clocklify.databinding.ActivityActivitiesBinding
-import com.kentreyhan.clocklify.utils.LocationUtils
+import com.kentreyhan.commons.utils.LocationUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ActivitiesActivity : AppCompatActivity() {
     private lateinit var fragmentPageAdapter: ActivitiesFramePageAdapter

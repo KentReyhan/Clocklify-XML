@@ -7,7 +7,7 @@
     android:background="@color/white"
     tools:context=".register.activity.RegisterActivity">
 
-    <com.kentreyhan.widget.appbar.CustomAppBar
+    <com.kentreyhan.commons.widgets.appbar.CustomAppBar
         android:id="@+id/registerAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="@+id/registerAppBar"
         app:layout_constraintTop_toBottomOf="@+id/registerAppBar" />
 
-    <com.kentreyhan.widget.textfield.CustomTextField
+    <com.kentreyhan.commons.widgets.textfield.CustomTextField
         android:id="@+id/registerEmailTextField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerTitle" />
 
-    <com.kentreyhan.widget.textfield.CustomTextField
+    <com.kentreyhan.commons.widgets.textfield.CustomTextField
         android:id="@+id/registerPasswordTextField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerEmailTextField" />
 
-    <com.kentreyhan.widget.textfield.CustomTextField
+    <com.kentreyhan.commons.widgets.textfield.CustomTextField
         android:id="@+id/registerConfirmPasswordTextField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerPasswordTextField" />
 
-    <com.kentreyhan.widget.button.CTAButton
+    <com.kentreyhan.commons.widgets.button.CTAButton
         android:id="@+id/registerActionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

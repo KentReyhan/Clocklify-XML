@@ -7,19 +7,29 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.dao.database.ActivityDatabase
+import com.example.dao.model.Activity
 import com.kentreyhan.clocklify.activities.model.ActivitiesModel
 import com.kentreyhan.clocklify.activitiesDetail.viewmodel.ActivitiesDetailViewModel
 import com.kentreyhan.clocklify.databinding.FragmentTimerBinding
 import com.kentreyhan.clocklify.repository.ActivityRepository
-import com.kentreyhan.clocklify.utils.DateUtils
+import com.kentreyhan.commons.utils.DateUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-class ActivitiesDetailFragment(var activity: ActivitiesModel) : Fragment() {
+class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
     private lateinit var binding: FragmentTimerBinding
+
+   private lateinit var db: ActivityDatabase
 
     private val activitiesDetailVM: ActivitiesDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = ActivityDatabase.getDatabase(requireContext())
     }
 
     override fun onCreateView(
@@ -64,7 +74,7 @@ class ActivitiesDetailFragment(var activity: ActivitiesModel) : Fragment() {
         }
     }
 
-    private fun setVisibleButton(goToStart: Boolean? = null, goToRunning: Boolean? = null, goToEnd: Boolean? = null) {
+    private fun setVisibleButton() {
         with(binding) {
             startButton.visibility = View.GONE
             runningTimerButtonLayout.visibility = View.GONE
@@ -73,12 +83,21 @@ class ActivitiesDetailFragment(var activity: ActivitiesModel) : Fragment() {
     }
 
     private fun saveActivitiesChanges(){
-        ActivityRepository.updateDetailItem(activity.id,activitiesDetailVM.activityDetail.value.toString())
+        runBlocking {
+            CoroutineScope(Dispatchers.IO).async {
+                db.activityDao().updateActivityDetail(activitiesDetailVM.activityDetail.value.toString(),
+                    activity.id)
+            }.await()
+        }
         requireActivity().finish()
     }
 
     private fun deleteActivities(){
-        ActivityRepository.removeItemById(activity.id)
+        runBlocking {
+            CoroutineScope(Dispatchers.IO).async {
+                db.activityDao().deleteById(activity.id)
+            }.await()
+        }
         requireActivity().finish()
     }
 

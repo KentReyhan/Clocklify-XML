@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dao.model.Activity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -27,7 +28,7 @@ import com.kentreyhan.clocklify.activities.model.ActivitiesModel
 import com.kentreyhan.clocklify.activities.viewmodel.ActivitiesViewModel
 import com.kentreyhan.clocklify.activitiesDetail.activity.ActivitiesDetailActivity
 import com.kentreyhan.clocklify.databinding.FragmentActivitiesBinding
-import com.kentreyhan.clocklify.utils.LocationUtils
+import com.kentreyhan.commons.utils.LocationUtils
 
 
 class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
@@ -39,10 +40,10 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
 
     private val locationUtils: LocationUtils = LocationUtils()
 
-    private val onItemClickListener: (ActivitiesModel) -> Unit = { item ->
+    private val onItemClickListener: (Int) -> Unit = { activityId ->
         requireContext().startActivity(
             Intent(context, ActivitiesDetailActivity::class.java)
-                .putExtra("Selected Activities", item)
+                .putExtra("Selected Activities", activityId)
         )
     }
 
@@ -51,7 +52,7 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activitiesVM.initActivitiesList()
+        activitiesVM.initActivitiesList(requireContext())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().applicationContext)
     }
 
@@ -65,7 +66,7 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
         binding.sortByDropdownList.setAdapter(arrayAdapter)
         binding.sortByDropdownList.setDropDownBackgroundDrawable(
             ContextCompat.getDrawable(
-                binding.root.context, com.kentreyhan.widget.R.drawable.background_light_blue_rounded
+                binding.root.context, com.kentreyhan.commons.R.drawable.background_light_blue_rounded
             )
         )
         binding.sortByDropdownList.setText(sortBy[0], false)
@@ -77,13 +78,13 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
     }
 
     override fun onStart() {
-        activitiesVM.initActivitiesList()
+        activitiesVM.initActivitiesList(requireContext())
         initRecyclerView()
         super.onStart()
     }
 
     override fun onResume() {
-        activitiesVM.initActivitiesList()
+        activitiesVM.initActivitiesList(requireContext())
         initRecyclerView()
         super.onResume()
     }

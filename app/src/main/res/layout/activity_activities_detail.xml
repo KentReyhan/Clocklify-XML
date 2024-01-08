@@ -7,7 +7,7 @@
     android:background="@color/primary"
     android:paddingHorizontal="16dp">
 
-    <com.kentreyhan.widget.appbar.CustomAppBar
+    <com.kentreyhan.commons.widgets.appbar.CustomAppBar
         android:id="@+id/activitiesAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

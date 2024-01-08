@@ -1,11 +1,18 @@
 package com.kentreyhan.clocklify.activities.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kentreyhan.clocklify.activities.model.ActivitiesModel
+import com.example.dao.database.ActivityDatabase
+import com.example.dao.model.Activity
 import com.kentreyhan.clocklify.activities.model.GroupedActivitiesModel
-import com.kentreyhan.clocklify.repository.ActivityRepository
-import com.kentreyhan.clocklify.utils.DateUtils
+import com.kentreyhan.commons.utils.DateUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 import kotlin.math.acos
 import kotlin.math.cos
@@ -14,14 +21,16 @@ import kotlin.math.sin
 
 class ActivitiesViewModel : ViewModel() {
 
-    private val groupedMap: MutableLiveData<HashMap<Date, ArrayList<ActivitiesModel>>> =
-        MutableLiveData<HashMap<Date, ArrayList<ActivitiesModel>>>(HashMap())
+    private lateinit var db: ActivityDatabase
 
-    private val groupedPair: MutableLiveData<ArrayList<Pair<Date,ActivitiesModel>>> =
-        MutableLiveData<ArrayList<Pair<Date,ActivitiesModel>>>(ArrayList())
+    private val groupedMap: MutableLiveData<HashMap<Date, ArrayList<Activity>>> =
+        MutableLiveData<HashMap<Date, ArrayList<Activity>>>(HashMap())
 
-    val activitiesList: MutableLiveData<ArrayList<ActivitiesModel>> =
-        MutableLiveData<ArrayList<ActivitiesModel>>()
+    private val groupedPair: MutableLiveData<ArrayList<Pair<Date,Activity>>> =
+        MutableLiveData<ArrayList<Pair<Date,Activity>>>(ArrayList())
+
+    val activitiesList: MutableLiveData<ArrayList<Activity>> =
+        MutableLiveData<ArrayList<Activity>>()
 
     val coordinate: MutableLiveData<ArrayList<Double>> =
         MutableLiveData<ArrayList<Double>>()
@@ -29,9 +38,15 @@ class ActivitiesViewModel : ViewModel() {
     val searchKeyword: MutableLiveData<String?> = MutableLiveData<String?>()
     val sortByValue: MutableLiveData<String> = MutableLiveData<String>("Latest Date")
 
-    fun initActivitiesList() {
-        //TODO: Implement SQLite for save data, import activities from there
-        activitiesList.value = ActivityRepository.getChannels()
+    fun initActivitiesList(context: Context) {
+        db = ActivityDatabase.getDatabase(context)
+        val result = CoroutineScope(Dispatchers.IO).async {
+            ArrayList(db.activityDao().getAllActivity())
+        }
+        runBlocking {
+            activitiesList.value = result.await()
+        }
+
         sortByDate()
         sortByCoordinates()
     }
@@ -57,7 +72,7 @@ class ActivitiesViewModel : ViewModel() {
     fun sortByDate() {
         groupedMap.value?.clear()
 
-        val queriedActivitiesList: ArrayList<ActivitiesModel> = getQueriedActivitiesList()
+        val queriedActivitiesList: ArrayList<Activity> = getQueriedActivitiesList()
 
         for (activities in queriedActivitiesList) {
             val dateString: String = DateUtils().getFormattedDate(activities.startTime)
@@ -78,7 +93,7 @@ class ActivitiesViewModel : ViewModel() {
 
         groupedPair.value?.clear()
 
-        val queriedActivitiesList: ArrayList<ActivitiesModel> = getQueriedActivitiesList()
+        val queriedActivitiesList: ArrayList<Activity> = getQueriedActivitiesList()
 
         queriedActivitiesList.sortBy {
             distance(coordinate.value!![0], coordinate.value!![1], it.latitude, it.longitude)
@@ -91,8 +106,8 @@ class ActivitiesViewModel : ViewModel() {
         }
     }
 
-    private fun getQueriedActivitiesList(): ArrayList<ActivitiesModel> {
-        val queriedActivitiesList: ArrayList<ActivitiesModel> = arrayListOf()
+    private fun getQueriedActivitiesList(): ArrayList<Activity> {
+        val queriedActivitiesList: ArrayList<Activity> = arrayListOf()
         if(searchKeyword.value != null){
             for (activities in activitiesList.value!!){
                if(activities.activitiesDetail.contains(searchKeyword.value!!)){

@@ -1,8 +1,6 @@
 package com.kentreyhan.clocklify.activities.adapter
 
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,22 +9,30 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dao.database.ActivityDatabase
+import com.example.dao.model.Activity
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.kentreyhan.clocklify.R
 import com.kentreyhan.clocklify.activities.model.ActivitiesModel
 import com.kentreyhan.clocklify.activities.model.GroupedActivitiesModel
 import com.kentreyhan.clocklify.databinding.GroupedDateListBinding
-import com.kentreyhan.clocklify.repository.ActivityRepository
-import com.kentreyhan.clocklify.utils.DateUtils
-import com.kentreyhan.clocklify.utils.dpToPixel
+import com.kentreyhan.commons.utils.DateUtils
+import com.kentreyhan.commons.utils.dpToPixel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class GroupedDateListAdapter(
     private val groupedList: ArrayList<GroupedActivitiesModel>,
-    var onItemClickListener: (ActivitiesModel) -> Unit
+    var onItemClickListener: (Int) -> Unit
 ) : RecyclerView.Adapter<GroupedDateListAdapter.ViewHolder>() {
 
+    private lateinit var db: ActivityDatabase
 
     interface ItemListener {
         fun deleteItem()
@@ -85,15 +91,19 @@ class GroupedDateListAdapter(
                         isCurrentlyActive: Boolean
                     ) {
 
-                        RecyclerViewSwipeDecorator.Builder(canvas, recyclerView, viewHolder, dX, dY, actionState,
-                            isCurrentlyActive)
+                        RecyclerViewSwipeDecorator.Builder(
+                            canvas, recyclerView, viewHolder, dX, dY, actionState,
+                            isCurrentlyActive
+                        )
                             .addBackgroundColor(ContextCompat.getColor(context, R.color.light_red))
                             .addSwipeLeftLabel("DELETE")
                             .setSwipeLeftLabelColor(ContextCompat.getColor(context, R.color.white))
-                            .setSwipeLeftLabelTypeface(ResourcesCompat.getFont(
-                                context, com.kentreyhan.widget.R.font
-                                    .roboto_regular
-                            ))
+                            .setSwipeLeftLabelTypeface(
+                                ResourcesCompat.getFont(
+                                    context, com.kentreyhan.commons.R.font
+                                        .roboto_regular
+                                )
+                            )
                             .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
                             .create()
                             .decorate()
@@ -103,10 +113,16 @@ class GroupedDateListAdapter(
                     }
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-                        group.activitiesList.removeAt(viewHolder.adapterPosition)
-                        ActivityRepository.removeItemByPosition(viewHolder.adapterPosition)
+                        val activityId = group.activitiesList[viewHolder.absoluteAdapterPosition].id
+                        group.activitiesList.removeAt(viewHolder.absoluteAdapterPosition)
 
-                        rvAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+
+                        db = ActivityDatabase.getDatabase(context)
+                        GlobalScope.launch {
+                            db.activityDao().deleteById(activityId)
+                        }
+
+                        rvAdapter.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
 
                         if (group.activitiesList.size == 0) {
                             val position = groupedDateListAdapter.groupedList.indexOfFirst { group -> id == group.id }

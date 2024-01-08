@@ -3,7 +3,7 @@ package com.kentreyhan.clocklify.register.viewmodel
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kentreyhan.widget.dialog.CustomDialog
+import com.kentreyhan.commons.widgets.dialog.CustomDialog
 
 class RegisterViewModel : ViewModel() {
     val emailValue: MutableLiveData<String?> = MutableLiveData<String?>()
