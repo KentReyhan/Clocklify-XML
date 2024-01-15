@@ -20,7 +20,7 @@ Unit) :
         val group: Activity = activitiesList[position]
         holder.bind(group)
         holder.itemView.setOnClickListener {
-            onItemClickListener(activitiesList[position].id)
+            activitiesList[position].id?.let { it1 -> onItemClickListener(it1) }
         }
     }
 
@@ -33,8 +33,8 @@ Unit) :
             binding.activitiesTimerText.text = activities.timer
             binding.activitiesDetailText.text = activities.activitiesDetail
             binding.activitiesStartEndTimeText.text = String.format(
-                " %s - %s", DateUtils().getFormattedTime
-                    (activities.startTime), DateUtils().getFormattedTime(activities.endTime)
+                " %s - %s", activities.startTime?.let { DateUtils().getFormattedTime(it) },
+                activities.endTime?.let { DateUtils().getFormattedTime(it) }
             )
             binding.activitiesCoordinatesText.text = String.format("%s.%s", activities.latitude, activities.longitude)
 

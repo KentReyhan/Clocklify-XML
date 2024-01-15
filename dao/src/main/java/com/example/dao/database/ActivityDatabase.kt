@@ -6,10 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.dao.dao.ActivityDao
 import com.example.dao.model.Activity
-import com.example.dao.model.DummyData
 
 @TypeConverters(DateConverters::class)
 @Database(entities = [Activity::class], version = 1, exportSchema = false)

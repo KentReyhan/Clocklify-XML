@@ -19,6 +19,7 @@ class ActivitiesActivity : AppCompatActivity() {
 
     private val locationUtils: LocationUtils = LocationUtils()
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityActivitiesBinding.inflate(layoutInflater)
         setContentView(binding.root)

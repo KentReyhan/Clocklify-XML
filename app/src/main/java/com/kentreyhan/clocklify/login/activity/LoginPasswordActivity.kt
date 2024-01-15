@@ -1,10 +1,13 @@
 package com.kentreyhan.clocklify.login.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import com.kentreyhan.clocklify.databinding.ActivityLoginPasswordBinding
 import com.kentreyhan.clocklify.login.viewmodel.LoginViewModel
+
 
 class LoginPasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginPasswordBinding
@@ -23,6 +26,7 @@ class LoginPasswordActivity : AppCompatActivity() {
 
     private fun initEvent() {
         binding.passwordActionButton.setOnClickListener {
+
             loginViewModel.login(this)
         }
 
@@ -33,10 +37,20 @@ class LoginPasswordActivity : AppCompatActivity() {
 
     private fun initObserver() {
         loginViewModel.passwordValue.observe(this) { password ->
-            if(password.isNullOrEmpty()){
-                binding.passwordTextField.errorText = "Email Invalid"
+            if (password.isNullOrBlank()) {
+                binding.passwordTextField.errorText = "Password is Empty"
             }
+            else{
+                binding.passwordTextField.errorText = null
+            }
+        }
 
+        loginViewModel.isLoading.observe(this) { loading ->
+            if (loading == true) {
+                binding.loadingIndicator.visibility = View.VISIBLE
+            } else {
+                binding.loadingIndicator.visibility = View.INVISIBLE
+            }
         }
     }
 }

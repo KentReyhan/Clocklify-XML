@@ -15,21 +15,28 @@ class DateUtils {
         return localTimeFormatter.format(date)
     }
 
-    fun parseFormattedTime(date: String): Date{
+    fun parseFormattedTime(date: String): Date {
         return localTimeFormatter.parse(date)
     }
 
-    fun parseFormattedDate(date: String): Date{
+    fun parseFormattedDate(date: String): Date {
         return localDateFormatter.parse(date)
     }
 
-    fun parseFormattedDateTime(date: String): Date{
-        return localDateTimeFormatter.parse(date)
+    fun getFormattedRequestedDate(date: Date): String {
+        return requestedDateFormatter.format(date)
     }
 
-    companion object{
+    fun getFormattedRequestedTime(date: Date): String {
+        return requestedTimeFormatter.format(date)
+    }
+
+    companion object {
         private val localDateFormatter = SimpleDateFormat("d MMM yyyy", Locale.US)
         private val localTimeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
+
+        private val requestedDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        private val requestedTimeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
 
         private val localDateTimeFormatter = SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.US)
     }

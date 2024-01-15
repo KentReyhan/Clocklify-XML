@@ -5,15 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dao.database.ActivityDatabase
 import com.example.dao.model.Activity
+import com.example.network.api.ApiServiceBuilder
+import com.example.network.dto.activity.response.ActivityListResponse
+import com.example.network.dto.activity.response.toModel
+import com.example.network.service.ActivityService
 import com.kentreyhan.clocklify.activities.model.GroupedActivitiesModel
 import com.kentreyhan.commons.utils.DateUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.kentreyhan.commons.utils.ToastUtils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.Collections
 import java.util.Date
+import java.util.TreeMap
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -23,11 +27,11 @@ class ActivitiesViewModel : ViewModel() {
 
     private lateinit var db: ActivityDatabase
 
-    private val groupedMap: MutableLiveData<HashMap<Date, ArrayList<Activity>>> =
-        MutableLiveData<HashMap<Date, ArrayList<Activity>>>(HashMap())
+    private val groupedMap: MutableLiveData<TreeMap<Date, ArrayList<Activity>>> =
+        MutableLiveData<TreeMap<Date, ArrayList<Activity>>>(TreeMap(Collections.reverseOrder()))
 
-    private val groupedPair: MutableLiveData<ArrayList<Pair<Date,Activity>>> =
-        MutableLiveData<ArrayList<Pair<Date,Activity>>>(ArrayList())
+    private val groupedPair: MutableLiveData<ArrayList<Pair<Date, Activity>>> =
+        MutableLiveData<ArrayList<Pair<Date, Activity>>>(ArrayList())
 
     val activitiesList: MutableLiveData<ArrayList<Activity>> =
         MutableLiveData<ArrayList<Activity>>()
@@ -38,31 +42,59 @@ class ActivitiesViewModel : ViewModel() {
     val searchKeyword: MutableLiveData<String?> = MutableLiveData<String?>()
     val sortByValue: MutableLiveData<String> = MutableLiveData<String>("Latest Date")
 
-    fun initActivitiesList(context: Context) {
-        db = ActivityDatabase.getDatabase(context)
-        val result = CoroutineScope(Dispatchers.IO).async {
-            ArrayList(db.activityDao().getAllActivity())
-        }
-        runBlocking {
-            activitiesList.value = result.await()
-        }
+    val isLoading: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
 
-        sortByDate()
-        sortByCoordinates()
+    private lateinit var activityService: ActivityService
+
+
+    fun onActivitiesSearchChanged(value: String) {
+        searchKeyword.value = value
+    }
+
+    fun onDropdownValueChanged(value: String) {
+        sortByValue.value = value
+    }
+
+    fun onIsLoadingChanged(value: Boolean) {
+        isLoading.postValue(value)
+    }
+
+    fun fetchActivityList(context: Context) {
+        activityService = ApiServiceBuilder.getActivityInstance(context)
+
+        onIsLoadingChanged(true)
+        activityService.getAllActivity(sort = "DESC").enqueue(object : Callback<ActivityListResponse> {
+
+            override fun onFailure(call: Call<ActivityListResponse>, t: Throwable) {
+                ToastUtils().showToast(context, "Fetching Activity List Failed")
+                onIsLoadingChanged(false)
+                return
+            }
+
+            override fun onResponse(call: Call<ActivityListResponse>, response: Response<ActivityListResponse>) {
+                val activityResponse = response.body()
+                if (activityResponse == null) {
+                    ToastUtils().showToast(context, "Fetching Activity List Failed")
+                    onIsLoadingChanged(false)
+                    return
+                }
+                activitiesList.postValue(activityResponse.toModel())
+                onIsLoadingChanged(false)
+            }
+        })
     }
 
     fun getGroupedList(): ArrayList<GroupedActivitiesModel> {
         val list: ArrayList<GroupedActivitiesModel> = arrayListOf()
         var id: Int = 1
-        if(sortByValue.value=="Nearby"){
-            groupedPair.value?.forEach{ group ->
-                list.add(GroupedActivitiesModel(id,group.first, arrayListOf(group.second)))
+        if (sortByValue.value == "Nearby") {
+            groupedPair.value?.forEach { group ->
+                list.add(GroupedActivitiesModel(id, group.first, arrayListOf(group.second)))
                 id++
             }
-        }
-        else if(sortByValue.value=="Latest Date"){
+        } else if (sortByValue.value == "Latest Date") {
             groupedMap.value?.forEach { group ->
-                list.add(GroupedActivitiesModel(id,group.key, group.value))
+                list.add(GroupedActivitiesModel(id, group.key, group.value))
                 id++
             }
         }
@@ -75,19 +107,17 @@ class ActivitiesViewModel : ViewModel() {
         val queriedActivitiesList: ArrayList<Activity> = getQueriedActivitiesList()
 
         for (activities in queriedActivitiesList) {
-            val dateString: String = DateUtils().getFormattedDate(activities.startTime)
+            val dateString: String = activities.startTime?.let { DateUtils().getFormattedDate(it) }.toString()
             val date: Date = DateUtils().parseFormattedDate(dateString)
             if (groupedMap.value?.containsKey(date) == false) {
                 groupedMap.value?.put(date, arrayListOf())
             }
             groupedMap.value?.get(date)?.add(activities)
         }
-        groupedMap.value?.toSortedMap()
-
     }
 
     fun sortByCoordinates() {
-        if(coordinate.value.isNullOrEmpty()){
+        if (coordinate.value.isNullOrEmpty()) {
             return
         }
 
@@ -96,11 +126,19 @@ class ActivitiesViewModel : ViewModel() {
         val queriedActivitiesList: ArrayList<Activity> = getQueriedActivitiesList()
 
         queriedActivitiesList.sortBy {
-            distance(coordinate.value!![0], coordinate.value!![1], it.latitude, it.longitude)
+
+            it.latitude?.let { it1 ->
+                it.longitude?.let { it2 ->
+                    distance(
+                        coordinate.value!![0], coordinate.value!![1], it1,
+                        it2
+                    )
+                }
+            }
         }
 
         for (activities in queriedActivitiesList) {
-            val dateString: String = DateUtils().getFormattedDate(activities.startTime)
+            val dateString: String = activities.startTime?.let { DateUtils().getFormattedDate(it) }.toString()
             val date: Date = DateUtils().parseFormattedDate(dateString)
             groupedPair.value?.add(Pair(date, activities))
         }
@@ -108,27 +146,21 @@ class ActivitiesViewModel : ViewModel() {
 
     private fun getQueriedActivitiesList(): ArrayList<Activity> {
         val queriedActivitiesList: ArrayList<Activity> = arrayListOf()
-        if(searchKeyword.value != null){
-            for (activities in activitiesList.value!!){
-               if(activities.activitiesDetail.contains(searchKeyword.value!!)){
-                   queriedActivitiesList.add(activities)
-               }
-            }
+        if(activitiesList.value==null){
+            return queriedActivitiesList
         }
-        else {
-            for (activities in activitiesList.value!!){
+        if (searchKeyword.value != null) {
+            for (activities in activitiesList.value!!) {
+                if (activities.activitiesDetail?.uppercase()?.contains(searchKeyword.value!!.uppercase()) == true) {
+                    queriedActivitiesList.add(activities)
+                }
+            }
+        } else {
+            for (activities in activitiesList.value!!) {
                 queriedActivitiesList.add(activities)
             }
         }
         return queriedActivitiesList
-    }
-
-    fun onActivitiesSearchChanged(value: String) {
-        searchKeyword.value = value
-    }
-
-    fun onDropdownValueChanged(value: String) {
-        sortByValue.value = value
     }
 
     private fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {

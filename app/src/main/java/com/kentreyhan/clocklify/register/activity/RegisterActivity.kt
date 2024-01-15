@@ -1,6 +1,7 @@
 package com.kentreyhan.clocklify.register.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.kentreyhan.clocklify.databinding.ActivityRegisterBinding
@@ -22,7 +23,9 @@ class RegisterActivity: AppCompatActivity() {
 
     private fun initEvent() {
         binding.registerActionButton.setOnClickListener {
+            binding.loadingIndicator.visibility = View.VISIBLE
             loginViewModel.register(this)
+            binding.loadingIndicator.visibility = View.GONE
         }
         binding.registerEmailTextField.addTextChangedListener {
             loginViewModel.onEmailChanged(binding.registerEmailTextField.text)
@@ -51,6 +54,14 @@ class RegisterActivity: AppCompatActivity() {
         loginViewModel.confirmPasswordValue.observe(this) { confirmPassword ->
             if(confirmPassword.isNullOrEmpty()){
                 binding.registerConfirmPasswordTextField.errorText = "Confirm Password Invalid"
+            }
+        }
+
+        loginViewModel.isLoading.observe(this) { loading ->
+            if (loading == true) {
+                binding.loadingIndicator.visibility = View.VISIBLE
+            } else {
+                binding.loadingIndicator.visibility = View.INVISIBLE
             }
         }
     }

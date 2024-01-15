@@ -11,12 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dao.database.ActivityDatabase
 import com.example.dao.model.Activity
+import com.example.network.api.ApiServiceBuilder
+import com.example.network.dto.activity.request.ActivityRequest
+import com.example.network.dto.activity.response.MessageResponse
+import com.example.network.service.ActivityService
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.kentreyhan.clocklify.R
 import com.kentreyhan.clocklify.activities.model.ActivitiesModel
 import com.kentreyhan.clocklify.activities.model.GroupedActivitiesModel
 import com.kentreyhan.clocklify.databinding.GroupedDateListBinding
 import com.kentreyhan.commons.utils.DateUtils
+import com.kentreyhan.commons.utils.ToastUtils
 import com.kentreyhan.commons.utils.dpToPixel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +30,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class GroupedDateListAdapter(
@@ -33,6 +41,8 @@ class GroupedDateListAdapter(
 ) : RecyclerView.Adapter<GroupedDateListAdapter.ViewHolder>() {
 
     private lateinit var db: ActivityDatabase
+
+    private lateinit var activityService: ActivityService
 
     interface ItemListener {
         fun deleteItem()
@@ -114,16 +124,31 @@ class GroupedDateListAdapter(
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                         val activityId = group.activitiesList[viewHolder.absoluteAdapterPosition].id
-                        group.activitiesList.removeAt(viewHolder.absoluteAdapterPosition)
 
+                        activityService = ApiServiceBuilder.getActivityInstance(context)
+                        activityService.deleteActivity(id = activityId.toString())
+                            .enqueue(object : Callback<MessageResponse> {
+                                override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                                    ToastUtils().showToast(context, "Delete Activity Failed")
+                                    return
+                                }
 
-                        db = ActivityDatabase.getDatabase(context)
+                                override fun onResponse(call: Call<MessageResponse>, response: Response<MessageResponse>) {
+                                    val activityResponse = response.body()
+                                    if (activityResponse == null) {
+                                        ToastUtils().showToast(context, "Delete Activity Failed")
+                                        return
+                                    }
+                                    group.activitiesList.removeAt(viewHolder.absoluteAdapterPosition)
+                                    rvAdapter.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
+                                }
+                            })
+                        /*db = ActivityDatabase.getDatabase(context)
                         GlobalScope.launch {
-                            db.activityDao().deleteById(activityId)
-                        }
-
-                        rvAdapter.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
-
+                            if (activityId != null) {
+                                db.activityDao().deleteById(activityId)
+                            }
+                        }*/
                         if (group.activitiesList.size == 0) {
                             val position = groupedDateListAdapter.groupedList.indexOfFirst { group -> id == group.id }
                             groupedDateListAdapter.groupedList.removeAt(position)

@@ -12,6 +12,7 @@ interface ActivityDao {
     @Query("SELECT * FROM activity_table")
     fun getAllActivity(): List<Activity>
 
+
     @Query("SELECT * FROM activity_table WHERE id = :id LIMIT 1")
     suspend fun getActivityById(id: Int) : Activity
 
@@ -33,4 +34,7 @@ interface ActivityDao {
     @Query("UPDATE activity_table SET activities_detail = :activitiesDetail WHERE id LIKE " +
             ":id")
     suspend fun updateActivityDetail(activitiesDetail: String, id: Int)
+
+    @Query("SELECT COUNT(*) FROM activity_table")
+    suspend fun getTableCount(): Int
 }

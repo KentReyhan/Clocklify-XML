@@ -3,6 +3,7 @@ package com.kentreyhan.clocklify.activities.fragment
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +14,14 @@ import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dao.model.Activity
+import com.example.network.api.ApiServiceBuilder
+import com.example.network.dto.activity.response.ActivityListResponse
+import com.example.network.dto.activity.response.toModel
+import com.example.network.service.ActivityService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -29,9 +35,18 @@ import com.kentreyhan.clocklify.activities.viewmodel.ActivitiesViewModel
 import com.kentreyhan.clocklify.activitiesDetail.activity.ActivitiesDetailActivity
 import com.kentreyhan.clocklify.databinding.FragmentActivitiesBinding
 import com.kentreyhan.commons.utils.LocationUtils
+import com.kentreyhan.commons.utils.ToastUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.HttpException
+import retrofit2.Response
 
 
-class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
+class ActivitiesFragment : Fragment(), GroupedDateListAdapter.ItemListener {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var binding: FragmentActivitiesBinding
@@ -46,13 +61,12 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
                 .putExtra("Selected Activities", activityId)
         )
     }
-
     private lateinit var activitiesLayoutManager: LinearLayoutManager
     private lateinit var activitiesAdapter: GroupedDateListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activitiesVM.initActivitiesList(requireContext())
+        activitiesVM.fetchActivityList(requireContext())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().applicationContext)
     }
 
@@ -78,25 +92,19 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
     }
 
     override fun onStart() {
-        activitiesVM.initActivitiesList(requireContext())
+        CoroutineScope(Dispatchers.IO).launch {
+            activitiesVM.fetchActivityList(requireContext())
+        }
         initRecyclerView()
         super.onStart()
     }
 
     override fun onResume() {
-        activitiesVM.initActivitiesList(requireContext())
+        CoroutineScope(Dispatchers.IO).launch {
+            activitiesVM.fetchActivityList(requireContext())
+        }
         initRecyclerView()
         super.onResume()
-    }
-
-    private fun initObserver() {
-        binding.searchActivityTextField.doAfterTextChanged {
-            activitiesVM.onActivitiesSearchChanged(binding.searchActivityTextField.text.toString())
-        }
-
-        binding.sortByDropdownList.addTextChangedListener {
-            activitiesVM.onDropdownValueChanged(binding.sortByDropdownList.text.toString())
-        }
     }
 
     private fun initEvent() {
@@ -139,6 +147,31 @@ class ActivitiesFragment : Fragment(),GroupedDateListAdapter.ItemListener{
         }
 
     }
+
+    private fun initObserver() {
+        activitiesVM.activitiesList.observe(viewLifecycleOwner){
+            activitiesVM.sortByDate()
+            activitiesVM.sortByCoordinates()
+            initRecyclerView()
+        }
+
+        binding.searchActivityTextField.doAfterTextChanged {
+            activitiesVM.onActivitiesSearchChanged(binding.searchActivityTextField.text.toString())
+        }
+
+        binding.sortByDropdownList.addTextChangedListener {
+            activitiesVM.onDropdownValueChanged(binding.sortByDropdownList.text.toString())
+        }
+
+        activitiesVM.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading == true) {
+                binding.loadingIndicator.visibility = View.VISIBLE
+            } else {
+                binding.loadingIndicator.visibility = View.INVISIBLE
+            }
+        }
+    }
+
 
     private fun initRecyclerView() {
         activitiesLayoutManager = LinearLayoutManager(binding.root.context, RecyclerView.VERTICAL, false)

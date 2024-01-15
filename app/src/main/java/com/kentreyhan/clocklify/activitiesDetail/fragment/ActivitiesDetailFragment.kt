@@ -23,13 +23,14 @@ import kotlinx.coroutines.runBlocking
 class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
     private lateinit var binding: FragmentTimerBinding
 
-   private lateinit var db: ActivityDatabase
+    private lateinit var db: ActivityDatabase
 
     private val activitiesDetailVM: ActivitiesDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db = ActivityDatabase.getDatabase(requireContext())
+        activitiesDetailVM.activity.value = activity
+        //db = ActivityDatabase.getDatabase(requireContext())
     }
 
     override fun onCreateView(
@@ -40,6 +41,7 @@ class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
         binding = FragmentTimerBinding.inflate(inflater, container, false)
         initValue()
         initEvent()
+        initObserver()
         setVisibleButton()
         return binding.root
 
@@ -51,10 +53,10 @@ class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
 
     private fun initValue() {
         binding.timerText.text = activity.timer
-        binding.startTimerText.text = DateUtils().getFormattedTime(activity.startTime)
-        binding.startDateText.text = DateUtils().getFormattedDate(activity.startTime)
-        binding.endTimerText.text = DateUtils().getFormattedTime(activity.endTime)
-        binding.endDateText.text = DateUtils().getFormattedDate(activity.endTime)
+        binding.startTimerText.text = activity.startTime?.let { DateUtils().getFormattedTime(it) }
+        binding.startDateText.text = activity.startTime?.let { DateUtils().getFormattedDate(it) }
+        binding.endTimerText.text = activity.endTime?.let { DateUtils().getFormattedTime(it) }
+        binding.endDateText.text = activity.endTime?.let { DateUtils().getFormattedDate(it) }
         binding.coordinateCardTimer.text = String.format("%f.%f", activity.latitude, activity.longitude)
         binding.textBoxField.setText(activity.activitiesDetail)
         activitiesDetailVM.activityDetail.value = activity.activitiesDetail
@@ -66,11 +68,27 @@ class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
         }
 
         binding.saveButton.setOnClickListener {
-            saveActivitiesChanges()
+            activitiesDetailVM.updateActivity(requireContext())
         }
 
         binding.deleteButton.setOnClickListener {
-            deleteActivities()
+            activitiesDetailVM.deleteActivity(requireContext())
+        }
+    }
+
+    private fun initObserver(){
+        activitiesDetailVM.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading == true) {
+                binding.loadingIndicator.visibility = View.VISIBLE
+            } else {
+                binding.loadingIndicator.visibility = View.INVISIBLE
+            }
+        }
+
+        activitiesDetailVM.isFinished.observe(viewLifecycleOwner) { finish ->
+            if (finish == true) {
+                requireActivity().finish()
+            }
         }
     }
 
@@ -80,25 +98,6 @@ class ActivitiesDetailFragment(var activity: Activity) : Fragment() {
             runningTimerButtonLayout.visibility = View.GONE
             endTimerButtonLayout.visibility = View.VISIBLE
         }
-    }
-
-    private fun saveActivitiesChanges(){
-        runBlocking {
-            CoroutineScope(Dispatchers.IO).async {
-                db.activityDao().updateActivityDetail(activitiesDetailVM.activityDetail.value.toString(),
-                    activity.id)
-            }.await()
-        }
-        requireActivity().finish()
-    }
-
-    private fun deleteActivities(){
-        runBlocking {
-            CoroutineScope(Dispatchers.IO).async {
-                db.activityDao().deleteById(activity.id)
-            }.await()
-        }
-        requireActivity().finish()
     }
 
 }

@@ -21,6 +21,7 @@ import com.kentreyhan.clocklify.activities.viewmodel.TimerViewModel
 import com.kentreyhan.clocklify.databinding.FragmentTimerBinding
 import com.kentreyhan.commons.utils.LocationUtils
 import com.kentreyhan.commons.utils.StringUtils
+import com.kentreyhan.commons.utils.ToastUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,11 +74,7 @@ class TimerFragment : Fragment() {
         }
         binding.saveButton.setOnClickListener {
             if (timerVM.activityDetail.value.isNullOrBlank()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Text box must be filled to be able to save activity",
-                    Toast.LENGTH_SHORT
-                ).show()
+                ToastUtils().showToast(requireContext(),"Text box must be filled to be able to save activity")
                 return@setOnClickListener
             }
 
@@ -124,6 +121,16 @@ class TimerFragment : Fragment() {
             val str = StringUtils().checkIfStringValueExist(coordinate, "-")
             binding.coordinateCardTimer.text = str
         }
+
+        timerVM.isLoading.observe(viewLifecycleOwner) { loading ->
+                if (loading == true) {
+                    binding.loadingIndicator.visibility = View.VISIBLE
+                } else {
+                    binding.loadingIndicator.visibility = View.INVISIBLE
+                }
+            }
+
+
 
     }
 
